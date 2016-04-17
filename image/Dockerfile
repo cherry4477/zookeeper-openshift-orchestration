@@ -9,7 +9,7 @@ RUN mkdir -p /zookeeper/data /zookeeper/wal /zookeeper/log && \
     curl -sSLO "${MIRROR}/zookeeper/stable/zookeeper-${ZK_VERSION}.tar.gz" && \
     #curl -sSLO http://www.apache.org/dist/zookeeper/zookeeper-${ZK_VERSION}/zookeeper-${ZK_VERSION}.tar.gz.asc && \
     #curl -sSL  https://dist.apache.org/repos/dist/release/zookeeper/KEYS | gpg -v --import - && \
-    tar -zx -C /zookeeper --strip-components=1 --no-same-owner -f zookeeper-${ZK_VERSION}.tar.gz && \
+    tar zxvf -C /zookeeper -f zookeeper-${ZK_VERSION}.tar.gz && \
     #apk del curl jq gnupg tar patch && \
     rm -rf \
       /tmp/* \
