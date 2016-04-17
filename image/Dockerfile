@@ -1,11 +1,11 @@
 FROM develar/java
 
-ENV ZK_VERSION 3.4.7
+ENV ZK_VERSION 3.4.8
 
 RUN mkdir -p /zookeeper/data /zookeeper/wal /zookeeper/log && \
     cd /tmp && \
     apk --update add ca-certificates curl jq gnupg tar patch bash && \
-    curl -sSLO "http://www.apache.org/zookeeper/stable/zookeeper-${ZK_VERSION}.tar.gz" && \
+    curl -sSLO "http://www.apache.org/dist/zookeeper/zookeeper-${ZK_VERSION}/zookeeper-${ZK_VERSION}.tar.gz" && \
     tar zxvf zookeeper-${ZK_VERSION}.tar.gz && \
     mv zookeeper-${ZK_VERSION} /zookeeper && \
     rm -rf \
