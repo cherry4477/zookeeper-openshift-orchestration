@@ -11,5 +11,7 @@ fi
 
 echo "zookeeper.DigestAuthenticationProvider.superDigest=${ZOO_PASSWORD}" >> /zookeeper/conf/zoo.cfg
 
+cat /zookeeper/conf/zoo.cfg
+
 cd /zookeeper
 exec "$@"
