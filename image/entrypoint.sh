@@ -9,5 +9,7 @@ if [ -n "$SERVERS" ]; then
 	done
 fi
 
+printf "zookeeper.DigestAuthenticationProvider.superDigest=${ZOO_PASSWORD}" >> /zookeeper/conf/zoo.cfg
+
 cd /zookeeper
 exec "$@"
