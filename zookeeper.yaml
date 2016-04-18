@@ -85,6 +85,8 @@ spec:
               value: "sb-instanceid-zk-1,sb-instanceid-zk-2,sb-instanceid-zk-3"
             - name: JVMFLAGS
               value: "-Xmx2G"
+            - name: ZOO_PASSWORD
+              value: "super:/o7XEyClGiOcKnJmPVFVYU8AQdw="
           ports:
             - containerPort: 2181
             - containerPort: 2888
@@ -123,6 +125,8 @@ spec:
               value: "sb-instanceid-zk-1,sb-instanceid-zk-2,sb-instanceid-zk-3"
             - name: JVMFLAGS
               value: "-Xmx2G"
+            - name: ZOO_PASSWORD
+              value: "super:/o7XEyClGiOcKnJmPVFVYU8AQdw="
           ports:
             - containerPort: 2181
             - containerPort: 2888
@@ -161,6 +165,8 @@ spec:
               value: "sb-instanceid-zk-1,sb-instanceid-zk-2,sb-instanceid-zk-3"
             - name: JVMFLAGS
               value: "-Xmx2G"
+            - name: ZOO_PASSWORD
+              value: "super:/o7XEyClGiOcKnJmPVFVYU8AQdw="
           ports:
             - containerPort: 2181
             - containerPort: 2888
