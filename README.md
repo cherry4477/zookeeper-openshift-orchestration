@@ -1,180 +1,22 @@
-[![](https://badge.imagelayers.io/elevy/zookeeper:latest.svg)](https://imagelayers.io/?images=elevy/zookeeper:latest 'Get your own badge on imagelayers.io')
+# 一个主从复制的zookeeper编排
+##简介
+1主2从。带超级账号。
+注意，由于zookeeper的2181并未使用http协议，所以现在不能走route只能在内部访问。
+应用的地址需要给出全名：
+```sb-instanceid-zk.<projectname>.svc.cluster.local```
+使用方式：
 
-ZooKeeper image based on the mesoscloud/zookeeper image. Modified by turning on quorumListenOnAllIP on the config file. This allows a ZooKeeper ensemble to operate within Kubernetes using Service IP addresses.
+	1.必须在网内，抱歉
+	2.zkCli.sh -server sb-instanceid-zk:2181
+##生成
+	1.执行编排，生成4个service和3个rc，其中每个rc一个pod.
+	2.注意替换其中的instanceid
+	3.注意替换其中超级用户名和密码。supper:xxxx，其中xxx的编码方式见zk说明文档。简单说先sha1再base64
+	
+##绑定
+直接返回密码，没有用户一说，所以很简单
+##注意事项
+如果不希望别人访问zookeeper集群，请要设置acl在根上。
+测试可以通过如下方式：
+```echo ruok | nc <service_ip> 2181; echo```
 
-The following Kubernetes config will create a reliable three node ZK ensemble. The ZK containers will be restarted if they terminate within their node, and they will be started in a new node if their current node dies.
-
-```
-apiVersion: v1
-kind: Service
-metadata:
-  name: zookeeper
-spec:
-  ports:
-    - name: client
-      port: 2181
-  selector:
-    app: zookeeper
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: zookeeper-1
-spec:
-  ports:
-    - name: client
-      port: 2181
-    - name: followers
-      port: 2888
-    - name: election
-      port: 3888
-  selector:
-    app: zookeeper
-    server-id: "1"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: zookeeper-2
-spec:
-  ports:
-    - name: client
-      port: 2181
-    - name: followers
-      port: 2888
-    - name: election
-      port: 3888
-  selector:
-    app: zookeeper
-    server-id: "2"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: zookeeper-3
-spec:
-  ports:
-    - name: client
-      port: 2181
-    - name: followers
-      port: 2888
-    - name: election
-      port: 3888
-  selector:
-    app: zookeeper
-    server-id: "3"
----
-apiVersion: v1
-kind: ReplicationController
-metadata:
-  name: zookeeper-1
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: zookeeper
-        server-id: "1"
-    spec:
-      volumes:
-        - name: data
-          emptyDir: {}
-        - name: wal
-          emptyDir:
-            medium: Memory
-      containers:
-        - name: server
-          image: elevy/zookeeper:latest
-          env:
-            - name: MYID
-              value: "1"
-            - name: SERVERS
-              value: "zookeeper-1,zookeeper-2,zookeeper-3"
-            - name: JVMFLAGS
-              value: "-Xmx2G"
-          ports:
-            - containerPort: 2181
-            - containerPort: 2888
-            - containerPort: 3888
-          volumeMounts:
-            - mountPath: /zookeeper/data
-              name: data
-            - mountPath: /zookeeper/wal
-              name: wal
----
-apiVersion: v1
-kind: ReplicationController
-metadata:
-  name: zookeeper-2
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: zookeeper
-        server-id: "2"
-    spec:
-      volumes:
-        - name: data
-          emptyDir: {}
-        - name: wal
-          emptyDir:
-            medium: Memory
-      containers:
-        - name: server
-          image: elevy/zookeeper:latest
-          env:
-            - name: MYID
-              value: "2"
-            - name: SERVERS
-              value: "zookeeper-1,zookeeper-2,zookeeper-3"
-            - name: JVMFLAGS
-              value: "-Xmx2G"
-          ports:
-            - containerPort: 2181
-            - containerPort: 2888
-            - containerPort: 3888
-          volumeMounts:
-            - mountPath: /zookeeper/data
-              name: data
-            - mountPath: /zookeeper/wal
-              name: wal
----
-apiVersion: v1
-kind: ReplicationController
-metadata:
-  name: zookeeper-3
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: zookeeper
-        server-id: "3"
-    spec:
-      volumes:
-        - name: data
-          emptyDir: {}
-        - name: wal
-          emptyDir:
-            medium: Memory
-      containers:
-        - name: server
-          image: elevy/zookeeper:latest
-          env:
-            - name: MYID
-              value: "3"
-            - name: SERVERS
-              value: "zookeeper-1,zookeeper-2,zookeeper-3"
-            - name: JVMFLAGS
-              value: "-Xmx2G"
-          ports:
-            - containerPort: 2181
-            - containerPort: 2888
-            - containerPort: 3888
-          volumeMounts:
-            - mountPath: /zookeeper/data
-              name: data
-            - mountPath: /zookeeper/wal
-              name: wal
-```
